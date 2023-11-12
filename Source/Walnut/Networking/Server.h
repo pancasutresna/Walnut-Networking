@@ -2,20 +2,19 @@
 
 #include "Walnut/Core/Buffer.h"
 
-#include <steam/steamnetworkingsockets.h>
-#include <steam/isteamnetworkingutils.h>
-#ifndef STEAMNETWORKINGSOCKETS_OPENSOURCE
-#include <steam/steam_api.h>
-#endif
-
 #include <string>
 #include <map>
 #include <thread>
 #include <functional>
 
+// Forward declarations for GNS API
+class ISteamNetworkingSockets;
+struct SteamNetConnectionStatusChangedCallback_t;
+
 namespace Walnut {
 
-	using ClientID = HSteamNetConnection;
+	// HSteamNetConnection in GNS API
+	using ClientID = uint32_t;
 
 	struct ClientInfo
 	{
@@ -72,7 +71,7 @@ namespace Walnut {
 		void KickClient(ClientID clientID);
 
 		bool IsRunning() const { return m_Running; }
-		const std::map<HSteamNetConnection, ClientInfo>& GetConnectedClients() const { return m_ConnectedClients; }
+		const std::map<ClientID, ClientInfo>& GetConnectedClients() const { return m_ConnectedClients; }
 	private:
 		void NetworkThreadFunc(); // Server thread
 
@@ -81,7 +80,7 @@ namespace Walnut {
 
 		// Server functionality
 		void PollIncomingMessages();
-		void SetClientNick(HSteamNetConnection hConn, const char* nick);
+		void SetClientNick(ClientID hConn, const char* nick);
 		void PollConnectionStateChanges();
 
 		void OnFatalError(const std::string& message);
@@ -93,11 +92,13 @@ namespace Walnut {
 
 		int m_Port = 0;
 		bool m_Running = false;
-		std::map<HSteamNetConnection, ClientInfo> m_ConnectedClients;
+		std::map<ClientID, ClientInfo> m_ConnectedClients;
 
 		ISteamNetworkingSockets* m_Interface = nullptr;
-		HSteamListenSocket m_ListenSocket = 0u;
-		HSteamNetPollGroup m_PollGroup = 0u;
+		uint32_t m_ListenSocket = 0u;
+
+		// HSteamNetPollGroup
+		uint32_t m_PollGroup = 0u;
 	};
 
 }

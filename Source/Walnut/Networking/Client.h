@@ -2,16 +2,13 @@
 
 #include "Walnut/Core/Buffer.h"
 
-#include <steam/steamnetworkingsockets.h>
-#include <steam/isteamnetworkingutils.h>
-#ifndef STEAMNETWORKINGSOCKETS_OPENSOURCE
-#include <steam/steam_api.h>
-#endif
-
 #include <string>
 #include <map>
 #include <thread>
 #include <functional>
+
+struct SteamNetConnectionStatusChangedCallback_t;
+class ISteamNetworkingSockets;
 
 namespace Walnut {
 
@@ -83,7 +80,9 @@ namespace Walnut {
 		bool m_Running = false;
 
 		ISteamNetworkingSockets* m_Interface = nullptr;
-		HSteamNetConnection m_Connection = 0;
+
+		// HSteamNetConnection
+		uint32_t m_Connection = 0;
 	};
 
 }

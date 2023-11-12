@@ -3,6 +3,12 @@
 #include <iostream>
 #include <chrono>
 
+#include <steam/steamnetworkingsockets.h>
+#include <steam/isteamnetworkingutils.h>
+#ifndef STEAMNETWORKINGSOCKETS_OPENSOURCE
+#include <steam/steam_api.h>
+#endif
+
 #include <spdlog/spdlog.h>
 
 namespace Walnut {
@@ -39,6 +45,7 @@ namespace Walnut {
 		s_Instance = this;
 		m_Running = true;
 
+		
 		SteamDatagramErrMsg errMsg;
 		if (!GameNetworkingSockets_Init(nullptr, errMsg))
 		{
@@ -48,6 +55,7 @@ namespace Walnut {
 
 		m_Interface = SteamNetworkingSockets();
 
+		
 		// Start listening
 		SteamNetworkingIPAddr serverLocalAddress;
 		serverLocalAddress.Clear();
@@ -229,10 +237,10 @@ namespace Walnut {
 		}
 	}
 
-	void Server::SetClientNick(HSteamNetConnection hConn, const char* nick)
+	void Server::SetClientNick(ClientID clientID, const char* nick)
 	{
 		// Set the connection name, too, which is useful for debugging
-		m_Interface->SetConnectionName(hConn, nick);
+		m_Interface->SetConnectionName(clientID, nick);
 	}
 
 	void Server::SetDataReceivedCallback(const DataReceivedCallback& function)
